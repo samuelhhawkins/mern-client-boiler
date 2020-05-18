@@ -1,5 +1,6 @@
 // Packages
 import React, { useState } from 'react'
+import { Redirect } from 'react-router-dom'
 
 const Login = props => {
   // Declare and initialize state variables
@@ -12,14 +13,14 @@ const Login = props => {
     e.preventDefault()
     console.log('submit', email, password, process.env.REACT_APP_SERVER_URL);
     // Fetch call to POST data
-    fetch(process.env.REACT_APP_SERVER_URL + 'auth/login', {
+    fetch('http://localhost:3000/auth/login', {
       method: 'POST',
       body: JSON.stringify({
         email,
         password
       }),
       headers: {
-        'Content-Type': 'applivation/json'
+        'Content-Type': 'application/json'
       }
     })
     .then(response => {
@@ -30,13 +31,20 @@ const Login = props => {
       }
 
       //We got a good (200) response, get the token
-      response.json().then(result => {
-        console.log('result', result);
+      response.json()
+      .then(result => {
+        console.log('Result:', result);
+        // giving the token back up to app.js
+        props.updateToken(result.token)
       })
     })
     .catch(err => {
       console.log('ERROR ON SUBMIT:', err);
     })
+  }
+
+  if(props.user) {
+    return <Redirect to='/profile' />
   }
 
   return (

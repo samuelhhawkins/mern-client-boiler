@@ -24,17 +24,17 @@ const App = props => {
 
     if (token) {
       // Decrypt the user data from the boilerToken
-        let decodeUser = jwtDecode(token)
+        let decodedUser = jwtDecode(token)
 
         // If the token in not valid or expired, user stays logged out
-        if (!decodeUser || Date.now() > decodeUser.exp * 1000){
+        if (!decodedUser || Date.now() > decodedUser.exp * 1000){
           console.log('expired or bad token');
           setUser(null)
         }
         else {
           //The user is valid user is good
           console.log('User and token are goood');
-          setUser(decodeUser)
+          setUser(decodedUser)
         }
     }
     else {
@@ -44,13 +44,22 @@ const App = props => {
     }
   }
 
+  const updateToken = (newToken) => {
+    // Set the new Token into localStorage
+    localStorage.setItem('boilerToken', newToken || '')
+
+    //Update the state (basically the user info)
+    decodeToken()
+  }
+
+
   return (
     <Router>
       <div className="App">
-        <Nav />
+        <Nav user={user} updateToken={updateToken} />
         <Header />
         <main>
-          <Content />
+          <Content user={user} updateToken={updateToken} />
         </main>
         <Footer />
       </div>
